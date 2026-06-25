@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>ACRA Sign-In Sheet</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --green: #3a6b4a;
+    --green-light: #e8f0ea;
+    --green-mid: #b8d1bc;
+    --amber: #c9783a;
+    --cream: #faf8f4;
+    --ink: #1e2820;
+    --muted: #6b7b6e;
+    --border: #ccd9ce;
+    --row-alt: #f2f6f3;
+  }
+
+  body {
+    font-family: -apple-system, 'Helvetica Neue', sans-serif;
+    background: var(--cream);
+    color: var(--ink);
+    min-height: 100vh;
+    padding: 0 0 60px;
+  }
+
+  /* ── Tabs ── */
+  .tabs {
+    display: flex;
+    background: var(--green);
+    padding: 0 16px;
+    gap: 4px;
+  }
+  .tab {
+    padding: 10px 16px;
+    font-size: 14px;
+    font-weight: 600;
+    color: rgba(255,255,255,.6);
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+    -webkit-tap-highlight-color: transparent;
+    transition: color .15s;
+  }
+  .tab.active { color: white; border-bottom-color: white; }
+
+  /* ── Header ── */
+  header {
+    background: var(--green);
+    color: white;
+    padding: 20px 24px 0;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 8px rgba(0,0,0,.2);
+  }
+
+  .header-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding-bottom: 12px;
+  }
+
+  header h1 { font-size: 22px; font-weight: 700; letter-spacing: .3px; }
+  header p { font-size: 13px; opacity: .8; margin-top: 2px; }
+
+  .date-badge {
+    background: rgba(255,255,255,.18);
+    border: 1px solid rgba(255,255,255,.3);
+    border-radius: 8px;
+    padding: 6px 12px;
+    font-size: 14px;
+    font-weight: 600;
+    white-space: nowrap;
+    cursor: pointer;
+    color: white;
+  }
+
+  /* ── Stats bar ── */
+  .stats {
+    display: flex;
+    background: var(--green-light);
+    border-bottom: 1px solid var(--border);
+  }
+  .stat {
+    flex: 1;
+    text-align: center;
+    padding: 10px 8px;
+    border-right: 1px solid var(--border);
+  }
+  .stat:last-child { border-right: none; }
+  .stat-num { font-size: 22px; font-weight: 700; color: var(--green); line-height: 1; }
+  .stat-label { font-size: 10px; text-transform: uppercase; letter-spacing: .5px; color: var(--muted); margin-top: 2px; }
+
+  /* ── Controls ── */
+  .controls {
+    display: flex;
+    gap: 8px;
+    padding: 12px 16px;
+    background: white;
+    border-bottom: 1px solid var(--border);
+    flex-wrap: wrap;
+  }
+
+  .btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 9px 14px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    transition: opacity .15s;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .btn:active { opacity: .7; }
+  .btn-primary { background: var(--green); color: white; }
+  .btn-secondary { background: var(--green-light); color: var(--green); border: 1px solid var(--green-mid); }
+  .btn-danger { background: #fde8e8; color: #c0392b; border: 1px solid #f5c6c6; }
+  .btn-amber { background: #fef3e8; color: var(--amber); border: 1px solid #f5d9bb; }
+
+  /* ── Table ── */
+  .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  table { width: 100%; min-width: 520px; border-collapse: collapse; }
+  thead th {
+    background: var(--green);
+    color: white;
+    padding: 10px 12px;
+    text-align: left;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: .6px;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  thead th:first-child { width: 44px; text-align: center; }
+  tbody tr { border-bottom: 1px solid var(--border); }
+  tbody tr:nth-child(even) { background: var(--row-alt); }
+  tbody tr.checked-in { background: #e6f4ea !important; }
+  tbody td { padding: 10px 12px; font-size: 15px; vertical-align: middle; }
+  tbody td:first-child {
+    text-align: center; font-size: 20px; cursor: pointer;
+    user-select: none; -webkit-tap-highlight-color: transparent;
+  }
+  .name-cell { font-weight: 500; }
+  .time-cell { font-size: 13px; color: var(--muted); white-space: nowrap; }
+  .time-cell.stamped { color: var(--green); font-weight: 600; }
+  .note-cell input {
+    width: 100%; border: none; background: transparent; font-size: 13px;
+    color: var(--muted); font-family: inherit; outline: none; padding: 2px 0;
+  }
+  .note-cell input:focus { border-bottom: 1px solid var(--green-mid); }
+
+  /* ── Add form ── */
+  .add-row-form {
+    display: none;
+    background: white;
+    border-top: 2px solid var(--green);
+    padding: 14px 16px;
+    gap: 10px;
+    flex-wrap: wrap;
+    align-items: flex-end;
+  }
+  .add-row-form.open { display: flex; }
+  .form-field { display: flex; flex-direction: column; gap: 4px; flex: 1; min-width: 140px; }
+  .form-field label { font-size: 11px; text-transform: uppercase; letter-spacing: .5px; color: var(--muted); font-weight: 600; }
+  .form-field input {
+    border: 1px solid var(--border); border-radius: 8px; padding: 9px 12px;
+    font-size: 15px; font-family: inherit; outline: none; background: var(--cream); color: var(--ink);
+  }
+  .form-field input:focus { border-color: var(--green); background: white; }
+
+  /* ── Empty state ── */
+  .empty { text-align: center; padding: 60px 24px; color: var(--muted); }
+  .empty .emoji { font-size: 40px; display: block; margin-bottom: 12px; }
+  .empty p { font-size: 15px; }
+
+  /* ── History tab ── */
+  #historyPane { display: none; }
+  #historyPane.active { display: block; }
+  #todayPane.hidden { display: none; }
+
+  .history-day {
+    border-bottom: 1px solid var(--border);
+    background: white;
+  }
+  .history-day-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 16px;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    gap: 10px;
+  }
+  .history-day-header:active { background: var(--green-light); }
+  .history-day-title { font-weight: 700; font-size: 15px; }
+  .history-day-meta { font-size: 13px; color: var(--muted); }
+  .history-day-badge {
+    background: var(--green);
+    color: white;
+    border-radius: 20px;
+    padding: 3px 10px;
+    font-size: 12px;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+  .history-day-body { display: none; padding: 0 16px 12px; }
+  .history-day-body.open { display: block; }
+  .history-names { display: flex; flex-wrap: wrap; gap: 6px; padding-top: 8px; }
+  .history-chip {
+    background: var(--green-light);
+    border: 1px solid var(--green-mid);
+    border-radius: 20px;
+    padding: 4px 12px;
+    font-size: 13px;
+    color: var(--ink);
+  }
+  .history-chip.absent {
+    background: #fff0f0;
+    border-color: #f5c6c6;
+    color: #999;
+    text-decoration: line-through;
+  }
+  .history-note { font-size: 12px; color: var(--amber); margin-left: 4px; }
+  .history-empty { padding: 40px 24px; text-align: center; color: var(--muted); font-size: 15px; }
+
+  /* ── Footer ── */
+  .footer-note { text-align: center; padding: 16px; font-size: 12px; color: var(--muted); }
+
+  /* ── Modal ── */
+  .modal-overlay {
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,.45); z-index: 200; align-items: center; justify-content: center;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: white; border-radius: 16px; padding: 24px;
+    width: 90%; max-width: 340px; box-shadow: 0 8px 40px rgba(0,0,0,.25);
+  }
+  .modal h2 { font-size: 17px; margin-bottom: 16px; color: var(--ink); }
+  .modal input[type="date"] {
+    width: 100%; padding: 10px 12px; border: 1px solid var(--border);
+    border-radius: 8px; font-size: 16px; font-family: inherit; margin-bottom: 16px;
+  }
+  .modal-btns { display: flex; gap: 8px; }
+  .modal-btns .btn { flex: 1; justify-content: center; }
+  .modal p { font-size: 14px; color: var(--muted); margin-bottom: 16px; line-height: 1.5; }
+
+  @media print {
+    header { position: static; background: white !important; color: black !important; }
+    .tabs { display: none; }
+    .controls, .add-row-form, .footer-note, td:last-child, th:last-child { display: none !important; }
+    .stats { background: white; }
+    .stat-num { color: black; }
+    table { min-width: unset; }
+    body { background: white; }
+    #historyPane { display: none !important; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-top">
+    <div>
+      <h1>ACRA Sign-In</h1>
+      <p>Summer Program · 9:00 AM – 1:00 PM</p>
+    </div>
+    <button class="date-badge" onclick="openDateModal()" id="dateDisplay">Loading…</button>
+  </div>
+  <div class="tabs">
+    <div class="tab active" id="tabToday" onclick="switchTab('today')">Today</div>
+    <div class="tab" id="tabHistory" onclick="switchTab('history')">History</div>
+  </div>
+</header>
+
+<!-- TODAY PANE -->
+<div id="todayPane">
+  <div class="stats">
+    <div class="stat"><div class="stat-num" id="statTotal">0</div><div class="stat-label">Enrolled</div></div>
+    <div class="stat"><div class="stat-num" id="statIn">0</div><div class="stat-label">Checked In</div></div>
+    <div class="stat"><div class="stat-num" id="statOut">0</div><div class="stat-label">Not Yet</div></div>
+  </div>
+
+  <div class="controls">
+    <button class="btn btn-primary" onclick="toggleAddForm()">＋ Add</button>
+    <button class="btn btn-secondary" onclick="checkInAll()">✓ All In</button>
+    <button class="btn btn-amber" onclick="closeDay()">📁 Save & Close Day</button>
+    <button class="btn btn-secondary" onclick="printSheet()">⎙ Print</button>
+    <button class="btn btn-danger" onclick="clearRoster()">🗑 Clear Roster</button>
+  </div>
+
+  <div class="add-row-form" id="addForm">
+    <div class="form-field">
+      <label>First Name</label>
+      <input type="text" id="newFirst" placeholder="e.g. Jordan" autocomplete="off">
+    </div>
+    <div class="form-field">
+      <label>Last Name</label>
+      <input type="text" id="newLast" placeholder="e.g. Smith" autocomplete="off">
+    </div>
+    <div class="form-field" style="min-width:110px;flex:0">
+      <label>Age / Grade</label>
+      <input type="text" id="newAge" placeholder="e.g. 8" autocomplete="off">
+    </div>
+    <button class="btn btn-primary" onclick="addParticipant()" style="align-self:flex-end">Add</button>
+    <button class="btn btn-secondary" onclick="toggleAddForm()" style="align-self:flex-end">Cancel</button>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>✓</th>
+          <th>Name</th>
+          <th>Age/Gr</th>
+          <th>Time In</th>
+          <th>Notes</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody id="rosterBody"></tbody>
+    </table>
+    <div class="empty" id="emptyState" style="display:none">
+      <span class="emoji">📋</span>
+      <p>No participants yet.<br>Tap <strong>+ Add</strong> to build your roster.</p>
+    </div>
+  </div>
+  <div class="footer-note">Tap ✓ to stamp check-in time · Tap <strong>Save &amp; Close Day</strong> at end of session to log attendance</div>
+</div>
+
+<!-- HISTORY PANE -->
+<div id="historyPane">
+  <div style="padding:12px 16px; background:white; border-bottom:1px solid var(--border); display:flex; gap:8px; flex-wrap:wrap;">
+    <button class="btn btn-secondary" onclick="exportHistory()">⬇ Export CSV</button>
+    <button class="btn btn-danger" onclick="clearHistory()">🗑 Clear History</button>
+  </div>
+  <div id="historyList"></div>
+</div>
+
+<!-- Date Modal -->
+<div class="modal-overlay" id="dateModal">
+  <div class="modal">
+    <h2>Set Session Date</h2>
+    <input type="date" id="dateInput">
+    <div class="modal-btns">
+      <button class="btn btn-secondary" onclick="closeDateModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveDate()">Set Date</button>
+    </div>
+  </div>
+</div>
+
+<!-- Close Day Modal -->
+<div class="modal-overlay" id="closeDayModal">
+  <div class="modal">
+    <h2>📁 Save & Close Day</h2>
+    <p id="closeDaySummary"></p>
+    <div class="modal-btns">
+      <button class="btn btn-secondary" onclick="closeCloseDayModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="confirmCloseDay()">Save to History</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── State ──────────────────────────────────────────────
+let roster = [];
+let sessionDate = new Date().toISOString().slice(0,10);
+let history = []; // [{date, entries:[{name,age,checkedIn,timeIn,note}]}]
+let currentTab = 'today';
+
+function load() {
+  try {
+    const r = localStorage.getItem('acra_roster');
+    if (r) roster = JSON.parse(r);
+    const d = localStorage.getItem('acra_date');
+    if (d) sessionDate = d;
+    const h = localStorage.getItem('acra_history');
+    if (h) history = JSON.parse(h);
+  } catch(e) {}
+  renderDate();
+  render();
+  renderHistory();
+}
+
+function save() {
+  try {
+    localStorage.setItem('acra_roster', JSON.stringify(roster));
+    localStorage.setItem('acra_date', sessionDate);
+    localStorage.setItem('acra_history', JSON.stringify(history));
+  } catch(e) {}
+}
+
+// ── Tabs ───────────────────────────────────────────────
+function switchTab(tab) {
+  currentTab = tab;
+  document.getElementById('tabToday').classList.toggle('active', tab === 'today');
+  document.getElementById('tabHistory').classList.toggle('active', tab === 'history');
+  document.getElementById('todayPane').classList.toggle('hidden', tab !== 'today');
+  document.getElementById('historyPane').classList.toggle('active', tab === 'history');
+}
+
+// ── Date ───────────────────────────────────────────────
+function renderDate() {
+  const d = new Date(sessionDate + 'T12:00:00');
+  document.getElementById('dateDisplay').textContent =
+    d.toLocaleDateString('en-US', {weekday:'short', month:'short', day:'numeric'});
+}
+function openDateModal() {
+  document.getElementById('dateInput').value = sessionDate;
+  document.getElementById('dateModal').classList.add('open');
+}
+function closeDateModal() { document.getElementById('dateModal').classList.remove('open'); }
+function saveDate() {
+  const v = document.getElementById('dateInput').value;
+  if (v) { sessionDate = v; save(); renderDate(); }
+  closeDateModal();
+}
+
+// ── Roster ─────────────────────────────────────────────
+function addParticipant() {
+  const first = document.getElementById('newFirst').value.trim();
+  const last  = document.getElementById('newLast').value.trim();
+  const age   = document.getElementById('newAge').value.trim();
+  if (!first && !last) return;
+  roster.push({ id: Date.now(), first, last, age, checkedIn: false, timeIn: null, note: '' });
+  roster.sort((a,b) => (a.last+a.first).localeCompare(b.last+b.first));
+  save(); render();
+  document.getElementById('newFirst').value = '';
+  document.getElementById('newLast').value  = '';
+  document.getElementById('newAge').value   = '';
+  document.getElementById('newFirst').focus();
+}
+
+function toggleCheck(id) {
+  const p = roster.find(r => r.id === id);
+  if (!p) return;
+  if (p.checkedIn) { p.checkedIn = false; p.timeIn = null; }
+  else { p.checkedIn = true; p.timeIn = new Date().toLocaleTimeString('en-US', {hour:'numeric', minute:'2-digit'}); }
+  save(); render();
+}
+
+function updateNote(id, val) {
+  const p = roster.find(r => r.id === id);
+  if (p) { p.note = val; save(); }
+}
+
+function removeParticipant(id) {
+  if (!confirm('Remove this participant from the roster?')) return;
+  roster = roster.filter(r => r.id !== id);
+  save(); render();
+}
+
+function checkInAll() {
+  const t = new Date().toLocaleTimeString('en-US', {hour:'numeric', minute:'2-digit'});
+  roster.forEach(p => { if (!p.checkedIn) { p.checkedIn = true; p.timeIn = t; } });
+  save(); render();
+}
+
+function clearRoster() {
+  if (!confirm('Delete the entire roster? History is kept separately.')) return;
+  roster = [];
+  save(); render();
+}
+
+// ── Close Day / Save to History ────────────────────────
+function closeDay() {
+  const inCount  = roster.filter(p => p.checkedIn).length;
+  const total    = roster.length;
+  const d = new Date(sessionDate + 'T12:00:00');
+  const dateStr  = d.toLocaleDateString('en-US', {weekday:'long', month:'long', day:'numeric'});
+  document.getElementById('closeDaySummary').textContent =
+    `Save attendance for ${dateStr}? ${inCount} of ${total} participants checked in. Today's check-ins will reset for tomorrow.`;
+  document.getElementById('closeDayModal').classList.add('open');
+}
+function closeCloseDayModal() { document.getElementById('closeDayModal').classList.remove('open'); }
+function confirmCloseDay() {
+  // Check if we already have an entry for this date; if so, replace it
+  const existing = history.findIndex(h => h.date === sessionDate);
+  const entry = {
+    date: sessionDate,
+    entries: roster.map(p => ({
+      name: (p.last ? p.last + ', ' + p.first : p.first),
+      age: p.age,
+      checkedIn: p.checkedIn,
+      timeIn: p.timeIn,
+      note: p.note
+    }))
+  };
+  if (existing >= 0) history[existing] = entry;
+  else history.unshift(entry);
+
+  // Reset today's check-ins
+  roster.forEach(p => { p.checkedIn = false; p.timeIn = null; p.note = ''; });
+
+  // Advance date to next weekday
+  const next = new Date(sessionDate + 'T12:00:00');
+  do { next.setDate(next.getDate() + 1); } while (next.getDay() === 0 || next.getDay() === 6);
+  sessionDate = next.toISOString().slice(0,10);
+
+  save(); render(); renderDate(); renderHistory();
+  closeCloseDayModal();
+  // Brief confirmation
+  document.getElementById('dateDisplay').textContent = '✅ Saved!';
+  setTimeout(renderDate, 1500);
+}
+
+// ── History ────────────────────────────────────────────
+function renderHistory() {
+  const list = document.getElementById('historyList');
+  if (history.length === 0) {
+    list.innerHTML = '<div class="history-empty">📅 No sessions saved yet.<br><br>Use <strong>Save &amp; Close Day</strong> at the end of each session.</div>';
+    return;
+  }
+  list.innerHTML = history.map((day, idx) => {
+    const d = new Date(day.date + 'T12:00:00');
+    const label = d.toLocaleDateString('en-US', {weekday:'long', month:'short', day:'numeric'});
+    const present = day.entries.filter(e => e.checkedIn).length;
+    const total   = day.entries.length;
+    const chips   = day.entries.map(e => {
+      const noteTag = e.note ? `<span class="history-note">(${escHtml(e.note)})</span>` : '';
+      return `<span class="history-chip ${e.checkedIn ? '' : 'absent'}">${escHtml(e.name)}${noteTag}</span>`;
+    }).join('');
+    return `
+      <div class="history-day">
+        <div class="history-day-header" onclick="toggleHistoryDay(${idx})">
+          <div>
+            <div class="history-day-title">${label}</div>
+            <div class="history-day-meta">${present} present · ${total - present} absent</div>
+          </div>
+          <span class="history-day-badge">${present}/${total}</span>
+        </div>
+        <div class="history-day-body" id="hday-${idx}">
+          <div class="history-names">${chips}</div>
+          <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap;">
+            <button class="btn btn-secondary" style="font-size:12px;padding:6px 10px" onclick="exportDay('${day.date}')">⬇ Export this day</button>
+            <button class="btn btn-danger" style="font-size:12px;padding:6px 10px" onclick="deleteDay('${day.date}')">✕ Delete</button>
+          </div>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+function toggleHistoryDay(idx) {
+  const el = document.getElementById('hday-' + idx);
+  el.classList.toggle('open');
+}
+
+function deleteDay(date) {
+  if (!confirm('Delete this day from history?')) return;
+  history = history.filter(h => h.date !== date);
+  save(); renderHistory();
+}
+
+function clearHistory() {
+  if (!confirm('Clear ALL history? This cannot be undone.')) return;
+  history = [];
+  save(); renderHistory();
+}
+
+function exportDay(date) {
+  const day = history.find(h => h.date === date);
+  if (!day) return;
+  csvDownload(day.date, [day]);
+}
+
+function exportHistory() {
+  csvDownload('acra-history', history);
+}
+
+function csvDownload(filename, days) {
+  const rows = [['Date','Name','Age/Grade','Checked In','Time In','Notes']];
+  days.forEach(day => {
+    day.entries.forEach(e => {
+      rows.push([day.date, e.name, e.age||'', e.checkedIn ? 'Yes' : 'No', e.timeIn||'', e.note||'']);
+    });
+  });
+  const csv = rows.map(r => r.map(v => '"' + String(v).replace(/"/g,'""') + '"').join(',')).join('\n');
+  const blob = new Blob([csv], {type:'text/csv'});
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href = url; a.download = filename + '.csv'; a.click();
+  URL.revokeObjectURL(url);
+}
+
+// ── Today render ───────────────────────────────────────
+function render() {
+  const body  = document.getElementById('rosterBody');
+  const empty = document.getElementById('emptyState');
+  const total   = roster.length;
+  const inCount = roster.filter(p => p.checkedIn).length;
+  document.getElementById('statTotal').textContent = total;
+  document.getElementById('statIn').textContent    = inCount;
+  document.getElementById('statOut').textContent   = total - inCount;
+
+  if (total === 0) { body.innerHTML = ''; empty.style.display = 'block'; return; }
+  empty.style.display = 'none';
+
+  body.innerHTML = roster.map(p => `
+    <tr class="${p.checkedIn ? 'checked-in' : ''}">
+      <td onclick="toggleCheck(${p.id})">${p.checkedIn ? '✅' : '⬜'}</td>
+      <td class="name-cell">${p.last ? p.last + ', ' + p.first : p.first}</td>
+      <td style="font-size:13px;color:var(--muted)">${p.age || '—'}</td>
+      <td class="time-cell ${p.timeIn ? 'stamped' : ''}">${p.timeIn || '—'}</td>
+      <td class="note-cell"><input type="text" placeholder="note…" value="${escHtml(p.note)}" onchange="updateNote(${p.id}, this.value)"></td>
+      <td><button onclick="removeParticipant(${p.id})" style="background:none;border:none;font-size:16px;cursor:pointer;color:#c0392b;padding:4px 8px;">✕</button></td>
+    </tr>`).join('');
+}
+
+function escHtml(s) {
+  return (s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');
+}
+
+function toggleAddForm() {
+  document.getElementById('addForm').classList.toggle('open');
+  if (document.getElementById('addForm').classList.contains('open'))
+    document.getElementById('newFirst').focus();
+}
+
+function printSheet() { window.print(); }
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && document.getElementById('addForm').classList.contains('open'))
+    addParticipant();
+});
+
+load();
+</script>
+</body>
+</html>
