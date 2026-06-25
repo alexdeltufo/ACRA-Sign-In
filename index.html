@@ -6,262 +6,105 @@
 <title>ACRA Sign-In Sheet</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
-
   :root {
-    --green: #3a6b4a;
-    --green-light: #e8f0ea;
-    --green-mid: #b8d1bc;
-    --amber: #c9783a;
-    --cream: #faf8f4;
-    --ink: #1e2820;
-    --muted: #6b7b6e;
-    --border: #ccd9ce;
-    --row-alt: #f2f6f3;
+    --green: #3a6b4a; --green-light: #e8f0ea; --green-mid: #b8d1bc;
+    --amber: #c9783a; --cream: #faf8f4; --ink: #1e2820;
+    --muted: #6b7b6e; --border: #ccd9ce; --row-alt: #f2f6f3;
+    --red: #c0392b; --red-light: #fde8e8; --red-mid: #f5c6c6;
   }
+  body { font-family: -apple-system, 'Helvetica Neue', sans-serif; background: var(--cream); color: var(--ink); min-height: 100vh; padding-bottom: 60px; }
 
-  body {
-    font-family: -apple-system, 'Helvetica Neue', sans-serif;
-    background: var(--cream);
-    color: var(--ink);
-    min-height: 100vh;
-    padding: 0 0 60px;
-  }
+  header { background: var(--green); color: white; padding: 16px 16px 0; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 8px rgba(0,0,0,.2); }
+  .header-top { display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 8px; padding-bottom: 10px; }
+  header h1 { font-size: 20px; font-weight: 700; }
+  header p { font-size: 12px; opacity: .8; margin-top: 2px; }
+  .date-badge { background: rgba(255,255,255,.18); border: 1px solid rgba(255,255,255,.3); border-radius: 8px; padding: 5px 10px; font-size: 13px; font-weight: 600; cursor: pointer; color: white; white-space: nowrap; }
 
-  /* ── Tabs ── */
-  .tabs {
-    display: flex;
-    background: var(--green);
-    padding: 0 16px;
-    gap: 4px;
-  }
-  .tab {
-    padding: 10px 16px;
-    font-size: 14px;
-    font-weight: 600;
-    color: rgba(255,255,255,.6);
-    cursor: pointer;
-    border-bottom: 3px solid transparent;
-    -webkit-tap-highlight-color: transparent;
-    transition: color .15s;
-  }
+  .tabs { display: flex; gap: 4px; padding-left: 4px; }
+  .tab { padding: 8px 14px; font-size: 13px; font-weight: 600; color: rgba(255,255,255,.55); cursor: pointer; border-bottom: 3px solid transparent; transition: color .15s; -webkit-tap-highlight-color: transparent; }
   .tab.active { color: white; border-bottom-color: white; }
 
-  /* ── Header ── */
-  header {
-    background: var(--green);
-    color: white;
-    padding: 20px 24px 0;
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    box-shadow: 0 2px 8px rgba(0,0,0,.2);
-  }
-
-  .header-top {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    flex-wrap: wrap;
-    gap: 10px;
-    padding-bottom: 12px;
-  }
-
-  header h1 { font-size: 22px; font-weight: 700; letter-spacing: .3px; }
-  header p { font-size: 13px; opacity: .8; margin-top: 2px; }
-
-  .date-badge {
-    background: rgba(255,255,255,.18);
-    border: 1px solid rgba(255,255,255,.3);
-    border-radius: 8px;
-    padding: 6px 12px;
-    font-size: 14px;
-    font-weight: 600;
-    white-space: nowrap;
-    cursor: pointer;
-    color: white;
-  }
-
-  /* ── Stats bar ── */
-  .stats {
-    display: flex;
-    background: var(--green-light);
-    border-bottom: 1px solid var(--border);
-  }
-  .stat {
-    flex: 1;
-    text-align: center;
-    padding: 10px 8px;
-    border-right: 1px solid var(--border);
-  }
+  .stats { display: flex; background: var(--green-light); border-bottom: 1px solid var(--border); }
+  .stat { flex: 1; text-align: center; padding: 8px 4px; border-right: 1px solid var(--border); }
   .stat:last-child { border-right: none; }
-  .stat-num { font-size: 22px; font-weight: 700; color: var(--green); line-height: 1; }
+  .stat-num { font-size: 20px; font-weight: 700; color: var(--green); line-height: 1; }
   .stat-label { font-size: 10px; text-transform: uppercase; letter-spacing: .5px; color: var(--muted); margin-top: 2px; }
 
-  /* ── Controls ── */
-  .controls {
-    display: flex;
-    gap: 8px;
-    padding: 12px 16px;
-    background: white;
-    border-bottom: 1px solid var(--border);
-    flex-wrap: wrap;
-  }
-
-  .btn {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    padding: 9px 14px;
-    border-radius: 8px;
-    font-size: 14px;
-    font-weight: 600;
-    border: none;
-    cursor: pointer;
-    transition: opacity .15s;
-    -webkit-tap-highlight-color: transparent;
-  }
+  .controls { display: flex; gap: 6px; padding: 10px 12px; background: white; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
+  .btn { display: flex; align-items: center; gap: 4px; padding: 7px 12px; border-radius: 8px; font-size: 13px; font-weight: 600; border: none; cursor: pointer; transition: opacity .15s; -webkit-tap-highlight-color: transparent; }
   .btn:active { opacity: .7; }
   .btn-primary { background: var(--green); color: white; }
   .btn-secondary { background: var(--green-light); color: var(--green); border: 1px solid var(--green-mid); }
-  .btn-danger { background: #fde8e8; color: #c0392b; border: 1px solid #f5c6c6; }
+  .btn-danger { background: var(--red-light); color: var(--red); border: 1px solid var(--red-mid); }
   .btn-amber { background: #fef3e8; color: var(--amber); border: 1px solid #f5d9bb; }
 
-  /* ── Table ── */
-  .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
-  table { width: 100%; min-width: 520px; border-collapse: collapse; }
-  thead th {
-    background: var(--green);
-    color: white;
-    padding: 10px 12px;
-    text-align: left;
-    font-size: 12px;
-    text-transform: uppercase;
-    letter-spacing: .6px;
-    font-weight: 600;
-    white-space: nowrap;
-  }
-  thead th:first-child { width: 44px; text-align: center; }
-  tbody tr { border-bottom: 1px solid var(--border); }
-  tbody tr:nth-child(even) { background: var(--row-alt); }
-  tbody tr.checked-in { background: #e6f4ea !important; }
-  tbody td { padding: 10px 12px; font-size: 15px; vertical-align: middle; }
-  tbody td:first-child {
-    text-align: center; font-size: 20px; cursor: pointer;
-    user-select: none; -webkit-tap-highlight-color: transparent;
-  }
-  .name-cell { font-weight: 500; }
-  .time-cell { font-size: 13px; color: var(--muted); white-space: nowrap; }
-  .time-cell.stamped { color: var(--green); font-weight: 600; }
-  .note-cell input {
-    width: 100%; border: none; background: transparent; font-size: 13px;
-    color: var(--muted); font-family: inherit; outline: none; padding: 2px 0;
-  }
-  .note-cell input:focus { border-bottom: 1px solid var(--green-mid); }
-
-  /* ── Add form ── */
-  .add-row-form {
-    display: none;
-    background: white;
-    border-top: 2px solid var(--green);
-    padding: 14px 16px;
-    gap: 10px;
-    flex-wrap: wrap;
-    align-items: flex-end;
-  }
+  .add-row-form { display: none; background: white; border-top: 2px solid var(--green); padding: 12px 14px; gap: 8px; flex-wrap: wrap; align-items: flex-end; }
   .add-row-form.open { display: flex; }
-  .form-field { display: flex; flex-direction: column; gap: 4px; flex: 1; min-width: 140px; }
-  .form-field label { font-size: 11px; text-transform: uppercase; letter-spacing: .5px; color: var(--muted); font-weight: 600; }
-  .form-field input {
-    border: 1px solid var(--border); border-radius: 8px; padding: 9px 12px;
-    font-size: 15px; font-family: inherit; outline: none; background: var(--cream); color: var(--ink);
-  }
+  .form-field { display: flex; flex-direction: column; gap: 3px; flex: 1; min-width: 120px; }
+  .form-field label { font-size: 10px; text-transform: uppercase; letter-spacing: .5px; color: var(--muted); font-weight: 600; }
+  .form-field input { border: 1px solid var(--border); border-radius: 8px; padding: 8px 10px; font-size: 15px; font-family: inherit; outline: none; background: var(--cream); color: var(--ink); }
   .form-field input:focus { border-color: var(--green); background: white; }
 
-  /* ── Empty state ── */
-  .empty { text-align: center; padding: 60px 24px; color: var(--muted); }
-  .empty .emoji { font-size: 40px; display: block; margin-bottom: 12px; }
-  .empty p { font-size: 15px; }
+  .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  table { width: 100%; min-width: 560px; border-collapse: collapse; }
+  thead th { background: var(--green); color: white; padding: 8px 10px; text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: .6px; font-weight: 600; white-space: nowrap; }
+  thead th:first-child { width: 50px; text-align: center; }
+  tbody tr { border-bottom: 1px solid var(--border); }
+  tbody tr:nth-child(even) { background: var(--row-alt); }
+  tbody tr.in { background: #e6f4ea !important; }
+  tbody tr.out { background: #fef0e6 !important; }
+  tbody td { padding: 9px 10px; font-size: 14px; vertical-align: middle; }
+  tbody td.check-cell { text-align: center; font-size: 22px; cursor: pointer; user-select: none; -webkit-tap-highlight-color: transparent; min-width: 50px; }
+  .name-cell { font-weight: 500; }
+  .time-cell { font-size: 12px; white-space: nowrap; }
+  .time-in { color: var(--green); font-weight: 600; }
+  .time-out { color: var(--red); font-weight: 600; }
+  .time-dash { color: var(--muted); }
+  .note-input { width: 100%; border: none; background: transparent; font-size: 12px; color: var(--muted); font-family: inherit; outline: none; padding: 2px 0; }
+  .note-input:focus { border-bottom: 1px solid var(--green-mid); }
 
-  /* ── History tab ── */
+  .empty { text-align: center; padding: 50px 20px; color: var(--muted); }
+  .empty .emoji { font-size: 36px; display: block; margin-bottom: 10px; }
+  .footer-note { text-align: center; padding: 14px; font-size: 11px; color: var(--muted); line-height: 1.6; }
+
+  /* Legend */
+  .legend { display: flex; gap: 12px; padding: 8px 14px; background: white; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
+  .legend-item { display: flex; align-items: center; gap: 5px; font-size: 12px; color: var(--muted); }
+
+  /* History */
   #historyPane { display: none; }
   #historyPane.active { display: block; }
   #todayPane.hidden { display: none; }
-
-  .history-day {
-    border-bottom: 1px solid var(--border);
-    background: white;
-  }
-  .history-day-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 14px 16px;
-    cursor: pointer;
-    -webkit-tap-highlight-color: transparent;
-    gap: 10px;
-  }
+  .history-day { border-bottom: 1px solid var(--border); background: white; }
+  .history-day-header { display: flex; justify-content: space-between; align-items: center; padding: 12px 14px; cursor: pointer; -webkit-tap-highlight-color: transparent; gap: 8px; }
   .history-day-header:active { background: var(--green-light); }
-  .history-day-title { font-weight: 700; font-size: 15px; }
-  .history-day-meta { font-size: 13px; color: var(--muted); }
-  .history-day-badge {
-    background: var(--green);
-    color: white;
-    border-radius: 20px;
-    padding: 3px 10px;
-    font-size: 12px;
-    font-weight: 700;
-    white-space: nowrap;
-  }
-  .history-day-body { display: none; padding: 0 16px 12px; }
+  .history-day-title { font-weight: 700; font-size: 14px; }
+  .history-day-meta { font-size: 12px; color: var(--muted); }
+  .history-day-badge { background: var(--green); color: white; border-radius: 20px; padding: 2px 10px; font-size: 12px; font-weight: 700; white-space: nowrap; }
+  .history-day-body { display: none; padding: 0 14px 12px; }
   .history-day-body.open { display: block; }
-  .history-names { display: flex; flex-wrap: wrap; gap: 6px; padding-top: 8px; }
-  .history-chip {
-    background: var(--green-light);
-    border: 1px solid var(--green-mid);
-    border-radius: 20px;
-    padding: 4px 12px;
-    font-size: 13px;
-    color: var(--ink);
-  }
-  .history-chip.absent {
-    background: #fff0f0;
-    border-color: #f5c6c6;
-    color: #999;
-    text-decoration: line-through;
-  }
-  .history-note { font-size: 12px; color: var(--amber); margin-left: 4px; }
-  .history-empty { padding: 40px 24px; text-align: center; color: var(--muted); font-size: 15px; }
+  .history-table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 12px; }
+  .history-table th { background: var(--green-light); color: var(--green); padding: 5px 8px; text-align: left; font-size: 11px; text-transform: uppercase; }
+  .history-table td { padding: 5px 8px; border-bottom: 1px solid var(--border); }
+  .history-table tr.present { background: #f0faf2; }
+  .history-table tr.absent td { color: #bbb; }
+  .history-empty { padding: 40px 20px; text-align: center; color: var(--muted); font-size: 14px; }
 
-  /* ── Footer ── */
-  .footer-note { text-align: center; padding: 16px; font-size: 12px; color: var(--muted); }
-
-  /* ── Modal ── */
-  .modal-overlay {
-    display: none; position: fixed; inset: 0;
-    background: rgba(0,0,0,.45); z-index: 200; align-items: center; justify-content: center;
-  }
+  /* Modals */
+  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.45); z-index: 200; align-items: center; justify-content: center; }
   .modal-overlay.open { display: flex; }
-  .modal {
-    background: white; border-radius: 16px; padding: 24px;
-    width: 90%; max-width: 340px; box-shadow: 0 8px 40px rgba(0,0,0,.25);
-  }
-  .modal h2 { font-size: 17px; margin-bottom: 16px; color: var(--ink); }
-  .modal input[type="date"] {
-    width: 100%; padding: 10px 12px; border: 1px solid var(--border);
-    border-radius: 8px; font-size: 16px; font-family: inherit; margin-bottom: 16px;
-  }
+  .modal { background: white; border-radius: 16px; padding: 22px; width: 90%; max-width: 340px; box-shadow: 0 8px 40px rgba(0,0,0,.25); }
+  .modal h2 { font-size: 17px; margin-bottom: 12px; color: var(--ink); font-weight: 700; }
+  .modal p { font-size: 13px; color: var(--muted); margin-bottom: 16px; line-height: 1.5; }
+  .modal input[type="date"] { width: 100%; padding: 9px 10px; border: 1px solid var(--border); border-radius: 8px; font-size: 16px; font-family: inherit; margin-bottom: 14px; }
   .modal-btns { display: flex; gap: 8px; }
   .modal-btns .btn { flex: 1; justify-content: center; }
-  .modal p { font-size: 14px; color: var(--muted); margin-bottom: 16px; line-height: 1.5; }
 
   @media print {
     header { position: static; background: white !important; color: black !important; }
-    .tabs { display: none; }
-    .controls, .add-row-form, .footer-note, td:last-child, th:last-child { display: none !important; }
-    .stats { background: white; }
-    .stat-num { color: black; }
-    table { min-width: unset; }
-    body { background: white; }
+    .tabs, .controls, .add-row-form, .footer-note, .legend, td:last-child, th:last-child { display: none !important; }
+    .stats { background: white; } .stat-num { color: black; }
+    table { min-width: unset; } body { background: white; }
     #historyPane { display: none !important; }
   }
 </style>
@@ -270,10 +113,7 @@
 
 <header>
   <div class="header-top">
-    <div>
-      <h1>ACRA Sign-In</h1>
-      <p>Summer Program · 9:00 AM – 1:00 PM</p>
-    </div>
+    <div><h1>ACRA Sign-In</h1><p>Summer Program · 9:00 AM – 1:00 PM</p></div>
     <button class="date-badge" onclick="openDateModal()" id="dateDisplay">Loading…</button>
   </div>
   <div class="tabs">
@@ -282,34 +122,41 @@
   </div>
 </header>
 
-<!-- TODAY PANE -->
 <div id="todayPane">
   <div class="stats">
     <div class="stat"><div class="stat-num" id="statTotal">0</div><div class="stat-label">Enrolled</div></div>
-    <div class="stat"><div class="stat-num" id="statIn">0</div><div class="stat-label">Checked In</div></div>
-    <div class="stat"><div class="stat-num" id="statOut">0</div><div class="stat-label">Not Yet</div></div>
+    <div class="stat"><div class="stat-num" id="statIn">0</div><div class="stat-label">In</div></div>
+    <div class="stat"><div class="stat-num" id="statOut">0</div><div class="stat-label">Out</div></div>
+    <div class="stat"><div class="stat-num" id="statAbsent">0</div><div class="stat-label">Absent</div></div>
+  </div>
+
+  <div class="legend">
+    <div class="legend-item">⬜ Not here</div>
+    <div class="legend-item">✅ Checked in</div>
+    <div class="legend-item">🔴 Checked out</div>
+    <div class="legend-item">(tap again to clear)</div>
   </div>
 
   <div class="controls">
     <button class="btn btn-primary" onclick="toggleAddForm()">＋ Add</button>
-    <button class="btn btn-secondary" onclick="checkInAll()">✓ All In</button>
-    <button class="btn btn-amber" onclick="closeDay()">📁 Save & Close Day</button>
-    <button class="btn btn-secondary" onclick="printSheet()">⎙ Print</button>
-    <button class="btn btn-danger" onclick="clearRoster()">🗑 Clear Roster</button>
+    <button class="btn btn-secondary" onclick="checkInAll()">✅ All In</button>
+    <button class="btn btn-amber" onclick="openCloseDay()">📁 Save &amp; Close Day</button>
+    <button class="btn btn-secondary" onclick="window.print()">⎙ Print</button>
+    <button class="btn btn-danger" onclick="clearRoster()">🗑 Roster</button>
   </div>
 
   <div class="add-row-form" id="addForm">
     <div class="form-field">
       <label>First Name</label>
-      <input type="text" id="newFirst" placeholder="e.g. Jordan" autocomplete="off">
+      <input type="text" id="newFirst" placeholder="Jordan" autocomplete="off">
     </div>
     <div class="form-field">
       <label>Last Name</label>
-      <input type="text" id="newLast" placeholder="e.g. Smith" autocomplete="off">
+      <input type="text" id="newLast" placeholder="Smith" autocomplete="off">
     </div>
-    <div class="form-field" style="min-width:110px;flex:0">
-      <label>Age / Grade</label>
-      <input type="text" id="newAge" placeholder="e.g. 8" autocomplete="off">
+    <div class="form-field" style="flex:0;min-width:80px">
+      <label>Age/Gr</label>
+      <input type="text" id="newAge" placeholder="8" autocomplete="off">
     </div>
     <button class="btn btn-primary" onclick="addParticipant()" style="align-self:flex-end">Add</button>
     <button class="btn btn-secondary" onclick="toggleAddForm()" style="align-self:flex-end">Cancel</button>
@@ -319,10 +166,11 @@
     <table>
       <thead>
         <tr>
-          <th>✓</th>
+          <th style="text-align:center">Status</th>
           <th>Name</th>
-          <th>Age/Gr</th>
+          <th>Age</th>
           <th>Time In</th>
+          <th>Time Out</th>
           <th>Notes</th>
           <th></th>
         </tr>
@@ -334,13 +182,12 @@
       <p>No participants yet.<br>Tap <strong>+ Add</strong> to build your roster.</p>
     </div>
   </div>
-  <div class="footer-note">Tap ✓ to stamp check-in time · Tap <strong>Save &amp; Close Day</strong> at end of session to log attendance</div>
+  <div class="footer-note">Tap once = Check In · Tap twice = Check Out · Tap three times = Clear<br>Tap <strong>Save &amp; Close Day</strong> at end of session to log attendance</div>
 </div>
 
-<!-- HISTORY PANE -->
 <div id="historyPane">
-  <div style="padding:12px 16px; background:white; border-bottom:1px solid var(--border); display:flex; gap:8px; flex-wrap:wrap;">
-    <button class="btn btn-secondary" onclick="exportHistory()">⬇ Export CSV</button>
+  <div class="controls">
+    <button class="btn btn-secondary" onclick="exportCSV()">⬇ Export CSV</button>
     <button class="btn btn-danger" onclick="clearHistory()">🗑 Clear History</button>
   </div>
   <div id="historyList"></div>
@@ -361,58 +208,66 @@
 <!-- Close Day Modal -->
 <div class="modal-overlay" id="closeDayModal">
   <div class="modal">
-    <h2>📁 Save & Close Day</h2>
+    <h2>📁 Save &amp; Close Day</h2>
     <p id="closeDaySummary"></p>
     <div class="modal-btns">
-      <button class="btn btn-secondary" onclick="closeCloseDayModal()">Cancel</button>
+      <button class="btn btn-secondary" onclick="document.getElementById('closeDayModal').classList.remove('open')">Cancel</button>
       <button class="btn btn-primary" onclick="confirmCloseDay()">Save to History</button>
     </div>
   </div>
 </div>
 
 <script>
-// ── State ──────────────────────────────────────────────
 let roster = [];
+let history = [];
 let sessionDate = new Date().toISOString().slice(0,10);
-let history = []; // [{date, entries:[{name,age,checkedIn,timeIn,note}]}]
-let currentTab = 'today';
+
+// Status cycle: 0=absent, 1=in, 2=out
+const STATUS = { ABSENT: 0, IN: 1, OUT: 2 };
 
 function load() {
   try {
-    const r = localStorage.getItem('acra_roster');
-    if (r) roster = JSON.parse(r);
-    const d = localStorage.getItem('acra_date');
-    if (d) sessionDate = d;
-    const h = localStorage.getItem('acra_history');
-    if (h) history = JSON.parse(h);
+    const r = localStorage.getItem('acra_roster'); if (r) roster = JSON.parse(r);
+    const h = localStorage.getItem('acra_history'); if (h) history = JSON.parse(h);
+    const d = localStorage.getItem('acra_date'); if (d) sessionDate = d;
   } catch(e) {}
-  renderDate();
-  render();
-  renderHistory();
+  renderDate(); render(); renderHistory();
 }
 
 function save() {
   try {
     localStorage.setItem('acra_roster', JSON.stringify(roster));
-    localStorage.setItem('acra_date', sessionDate);
     localStorage.setItem('acra_history', JSON.stringify(history));
+    localStorage.setItem('acra_date', sessionDate);
   } catch(e) {}
 }
 
-// ── Tabs ───────────────────────────────────────────────
 function switchTab(tab) {
-  currentTab = tab;
   document.getElementById('tabToday').classList.toggle('active', tab === 'today');
   document.getElementById('tabHistory').classList.toggle('active', tab === 'history');
   document.getElementById('todayPane').classList.toggle('hidden', tab !== 'today');
   document.getElementById('historyPane').classList.toggle('active', tab === 'history');
 }
 
-// ── Date ───────────────────────────────────────────────
+function fmtDate(iso) {
+  const d = new Date(iso + 'T12:00:00');
+  return d.toLocaleDateString('en-US', {weekday:'short', month:'short', day:'numeric'});
+}
+function fmtDateLong(iso) {
+  const d = new Date(iso + 'T12:00:00');
+  return d.toLocaleDateString('en-US', {weekday:'long', month:'long', day:'numeric'});
+}
+function fmtTime() {
+  return new Date().toLocaleTimeString('en-US', {hour:'numeric', minute:'2-digit'});
+}
+function nextWeekday(iso) {
+  const d = new Date(iso + 'T12:00:00');
+  do { d.setDate(d.getDate() + 1); } while (d.getDay() === 0 || d.getDay() === 6);
+  return d.toISOString().slice(0,10);
+}
+
 function renderDate() {
-  const d = new Date(sessionDate + 'T12:00:00');
-  document.getElementById('dateDisplay').textContent =
-    d.toLocaleDateString('en-US', {weekday:'short', month:'short', day:'numeric'});
+  document.getElementById('dateDisplay').textContent = fmtDate(sessionDate);
 }
 function openDateModal() {
   document.getElementById('dateInput').value = sessionDate;
@@ -425,13 +280,12 @@ function saveDate() {
   closeDateModal();
 }
 
-// ── Roster ─────────────────────────────────────────────
 function addParticipant() {
   const first = document.getElementById('newFirst').value.trim();
   const last  = document.getElementById('newLast').value.trim();
   const age   = document.getElementById('newAge').value.trim();
   if (!first && !last) return;
-  roster.push({ id: Date.now(), first, last, age, checkedIn: false, timeIn: null, note: '' });
+  roster.push({ id: Date.now(), first, last, age, status: STATUS.ABSENT, timeIn: null, timeOut: null, note: '' });
   roster.sort((a,b) => (a.last+a.first).localeCompare(b.last+b.first));
   save(); render();
   document.getElementById('newFirst').value = '';
@@ -440,11 +294,16 @@ function addParticipant() {
   document.getElementById('newFirst').focus();
 }
 
-function toggleCheck(id) {
+function cycleStatus(id) {
   const p = roster.find(r => r.id === id);
   if (!p) return;
-  if (p.checkedIn) { p.checkedIn = false; p.timeIn = null; }
-  else { p.checkedIn = true; p.timeIn = new Date().toLocaleTimeString('en-US', {hour:'numeric', minute:'2-digit'}); }
+  if (p.status === STATUS.ABSENT) {
+    p.status = STATUS.IN; p.timeIn = fmtTime(); p.timeOut = null;
+  } else if (p.status === STATUS.IN) {
+    p.status = STATUS.OUT; p.timeOut = fmtTime();
+  } else {
+    p.status = STATUS.ABSENT; p.timeIn = null; p.timeOut = null;
+  }
   save(); render();
 }
 
@@ -454,104 +313,130 @@ function updateNote(id, val) {
 }
 
 function removeParticipant(id) {
-  if (!confirm('Remove this participant from the roster?')) return;
+  if (!confirm('Remove this participant?')) return;
   roster = roster.filter(r => r.id !== id);
   save(); render();
 }
 
 function checkInAll() {
-  const t = new Date().toLocaleTimeString('en-US', {hour:'numeric', minute:'2-digit'});
-  roster.forEach(p => { if (!p.checkedIn) { p.checkedIn = true; p.timeIn = t; } });
+  const t = fmtTime();
+  roster.forEach(p => { if (p.status === STATUS.ABSENT) { p.status = STATUS.IN; p.timeIn = t; } });
   save(); render();
 }
 
 function clearRoster() {
   if (!confirm('Delete the entire roster? History is kept separately.')) return;
-  roster = [];
-  save(); render();
+  roster = []; save(); render();
 }
 
-// ── Close Day / Save to History ────────────────────────
-function closeDay() {
-  const inCount  = roster.filter(p => p.checkedIn).length;
-  const total    = roster.length;
-  const d = new Date(sessionDate + 'T12:00:00');
-  const dateStr  = d.toLocaleDateString('en-US', {weekday:'long', month:'long', day:'numeric'});
-  document.getElementById('closeDaySummary').textContent =
-    `Save attendance for ${dateStr}? ${inCount} of ${total} participants checked in. Today's check-ins will reset for tomorrow.`;
-  document.getElementById('closeDayModal').classList.add('open');
-}
-function closeCloseDayModal() { document.getElementById('closeDayModal').classList.remove('open'); }
-function confirmCloseDay() {
-  // Check if we already have an entry for this date; if so, replace it
-  const existing = history.findIndex(h => h.date === sessionDate);
-  const entry = {
-    date: sessionDate,
-    entries: roster.map(p => ({
-      name: (p.last ? p.last + ', ' + p.first : p.first),
-      age: p.age,
-      checkedIn: p.checkedIn,
-      timeIn: p.timeIn,
-      note: p.note
-    }))
-  };
-  if (existing >= 0) history[existing] = entry;
-  else history.unshift(entry);
-
-  // Reset today's check-ins
-  roster.forEach(p => { p.checkedIn = false; p.timeIn = null; p.note = ''; });
-
-  // Advance date to next weekday
-  const next = new Date(sessionDate + 'T12:00:00');
-  do { next.setDate(next.getDate() + 1); } while (next.getDay() === 0 || next.getDay() === 6);
-  sessionDate = next.toISOString().slice(0,10);
-
-  save(); render(); renderDate(); renderHistory();
-  closeCloseDayModal();
-  // Brief confirmation
-  document.getElementById('dateDisplay').textContent = '✅ Saved!';
-  setTimeout(renderDate, 1500);
+function statusEmoji(s) {
+  if (s === STATUS.IN)  return '✅';
+  if (s === STATUS.OUT) return '🔴';
+  return '⬜';
 }
 
-// ── History ────────────────────────────────────────────
-function renderHistory() {
-  const list = document.getElementById('historyList');
-  if (history.length === 0) {
-    list.innerHTML = '<div class="history-empty">📅 No sessions saved yet.<br><br>Use <strong>Save &amp; Close Day</strong> at the end of each session.</div>';
-    return;
-  }
-  list.innerHTML = history.map((day, idx) => {
-    const d = new Date(day.date + 'T12:00:00');
-    const label = d.toLocaleDateString('en-US', {weekday:'long', month:'short', day:'numeric'});
-    const present = day.entries.filter(e => e.checkedIn).length;
-    const total   = day.entries.length;
-    const chips   = day.entries.map(e => {
-      const noteTag = e.note ? `<span class="history-note">(${escHtml(e.note)})</span>` : '';
-      return `<span class="history-chip ${e.checkedIn ? '' : 'absent'}">${escHtml(e.name)}${noteTag}</span>`;
-    }).join('');
-    return `
-      <div class="history-day">
-        <div class="history-day-header" onclick="toggleHistoryDay(${idx})">
-          <div>
-            <div class="history-day-title">${label}</div>
-            <div class="history-day-meta">${present} present · ${total - present} absent</div>
-          </div>
-          <span class="history-day-badge">${present}/${total}</span>
-        </div>
-        <div class="history-day-body" id="hday-${idx}">
-          <div class="history-names">${chips}</div>
-          <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap;">
-            <button class="btn btn-secondary" style="font-size:12px;padding:6px 10px" onclick="exportDay('${day.date}')">⬇ Export this day</button>
-            <button class="btn btn-danger" style="font-size:12px;padding:6px 10px" onclick="deleteDay('${day.date}')">✕ Delete</button>
-          </div>
-        </div>
-      </div>`;
+function render() {
+  const body  = document.getElementById('rosterBody');
+  const empty = document.getElementById('emptyState');
+  const total   = roster.length;
+  const inCount = roster.filter(p => p.status === STATUS.IN).length;
+  const outCount= roster.filter(p => p.status === STATUS.OUT).length;
+  const absent  = roster.filter(p => p.status === STATUS.ABSENT).length;
+  document.getElementById('statTotal').textContent  = total;
+  document.getElementById('statIn').textContent     = inCount;
+  document.getElementById('statOut').textContent    = outCount;
+  document.getElementById('statAbsent').textContent = absent;
+
+  if (total === 0) { body.innerHTML = ''; empty.style.display = 'block'; return; }
+  empty.style.display = 'none';
+
+  body.innerHTML = roster.map(p => {
+    const rowClass = p.status === STATUS.IN ? 'in' : p.status === STATUS.OUT ? 'out' : '';
+    return `<tr class="${rowClass}">
+      <td class="check-cell" onclick="cycleStatus(${p.id})">${statusEmoji(p.status)}</td>
+      <td class="name-cell">${p.last ? escHtml(p.last) + ', ' + escHtml(p.first) : escHtml(p.first)}</td>
+      <td style="font-size:12px;color:var(--muted)">${p.age || '—'}</td>
+      <td class="time-cell ${p.timeIn ? 'time-in' : 'time-dash'}">${p.timeIn || '—'}</td>
+      <td class="time-cell ${p.timeOut ? 'time-out' : 'time-dash'}">${p.timeOut || '—'}</td>
+      <td><input class="note-input" placeholder="note…" value="${escHtml(p.note)}" onchange="updateNote(${p.id}, this.value)"></td>
+      <td><button onclick="removeParticipant(${p.id})" style="background:none;border:none;color:var(--red);font-size:15px;cursor:pointer;padding:2px 6px">✕</button></td>
+    </tr>`;
   }).join('');
 }
 
-function toggleHistoryDay(idx) {
-  const el = document.getElementById('hday-' + idx);
-  el.classList.toggle('open');
+function openCloseDay() {
+  const inCount = roster.filter(p => p.status === STATUS.IN || p.status === STATUS.OUT).length;
+  document.getElementById('closeDaySummary').textContent =
+    `Save attendance for ${fmtDateLong(sessionDate)}? ${inCount} of ${roster.length} participants were present. Check-ins will reset for tomorrow.`;
+  document.getElementById('closeDayModal').classList.add('open');
+}
+
+function confirmCloseDay() {
+  const entry = {
+    date: sessionDate,
+    entries: roster.map(p => ({
+      name: p.last ? p.last + ', ' + p.first : p.first,
+      age: p.age,
+      status: p.status,
+      timeIn: p.timeIn,
+      timeOut: p.timeOut,
+      note: p.note
+    }))
+  };
+  const idx = history.findIndex(h => h.date === sessionDate);
+  if (idx >= 0) history[idx] = entry; else history.unshift(entry);
+  roster.forEach(p => { p.status = STATUS.ABSENT; p.timeIn = null; p.timeOut = null; p.note = ''; });
+  sessionDate = nextWeekday(sessionDate);
+  save(); render(); renderDate(); renderHistory();
+  document.getElementById('closeDayModal').classList.remove('open');
+  document.getElementById('dateDisplay').textContent = '✅ Saved!';
+  setTimeout(renderDate, 1800);
+}
+
+function renderHistory() {
+  const list = document.getElementById('historyList');
+  if (!list) return;
+  if (history.length === 0) {
+    list.innerHTML = '<div class="history-empty">📅 No sessions saved yet.<br><br>Use <strong>Save &amp; Close Day</strong> at end of each session.</div>';
+    return;
+  }
+  list.innerHTML = history.map((day, idx) => {
+    const present = day.entries.filter(e => e.status === STATUS.IN || e.status === STATUS.OUT).length;
+    const total   = day.entries.length;
+    const rows = day.entries.map(e => {
+      const isPresent = e.status === STATUS.IN || e.status === STATUS.OUT;
+      const statusLabel = e.status === STATUS.IN ? '✅ In' : e.status === STATUS.OUT ? '🔴 Out' : '⬜ Absent';
+      return `<tr class="${isPresent ? 'present' : 'absent'}">
+        <td>${escHtml(e.name)}</td>
+        <td>${statusLabel}</td>
+        <td>${e.timeIn || '—'}</td>
+        <td>${e.timeOut || '—'}</td>
+        <td>${escHtml(e.note||'')}</td>
+      </tr>`;
+    }).join('');
+    return `<div class="history-day">
+      <div class="history-day-header" onclick="toggleDay(${idx})">
+        <div>
+          <div class="history-day-title">${fmtDateLong(day.date)}</div>
+          <div class="history-day-meta">${present} present · ${total-present} absent</div>
+        </div>
+        <span class="history-day-badge">${present}/${total}</span>
+      </div>
+      <div class="history-day-body" id="hday-${idx}">
+        <table class="history-table">
+          <thead><tr><th>Name</th><th>Status</th><th>Time In</th><th>Time Out</th><th>Notes</th></tr></thead>
+          <tbody>${rows}</tbody>
+        </table>
+        <div style="margin-top:10px;display:flex;gap:8px">
+          <button class="btn btn-danger" style="font-size:12px;padding:5px 10px" onclick="deleteDay('${day.date}')">✕ Delete</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function toggleDay(idx) {
+  document.getElementById('hday-' + idx).classList.toggle('open');
 }
 
 function deleteDay(date) {
@@ -561,75 +446,36 @@ function deleteDay(date) {
 }
 
 function clearHistory() {
-  if (!confirm('Clear ALL history? This cannot be undone.')) return;
-  history = [];
-  save(); renderHistory();
+  if (!confirm('Clear ALL history? Cannot be undone.')) return;
+  history = []; save(); renderHistory();
 }
 
-function exportDay(date) {
-  const day = history.find(h => h.date === date);
-  if (!day) return;
-  csvDownload(day.date, [day]);
-}
-
-function exportHistory() {
-  csvDownload('acra-history', history);
-}
-
-function csvDownload(filename, days) {
-  const rows = [['Date','Name','Age/Grade','Checked In','Time In','Notes']];
-  days.forEach(day => {
+function exportCSV() {
+  const rows = [['Date','Name','Age','Status','Time In','Time Out','Notes']];
+  history.forEach(day => {
     day.entries.forEach(e => {
-      rows.push([day.date, e.name, e.age||'', e.checkedIn ? 'Yes' : 'No', e.timeIn||'', e.note||'']);
+      const statusLabel = e.status === STATUS.IN ? 'In' : e.status === STATUS.OUT ? 'Out' : 'Absent';
+      rows.push([day.date, e.name, e.age||'', statusLabel, e.timeIn||'', e.timeOut||'', e.note||'']);
     });
   });
   const csv = rows.map(r => r.map(v => '"' + String(v).replace(/"/g,'""') + '"').join(',')).join('\n');
-  const blob = new Blob([csv], {type:'text/csv'});
-  const url  = URL.createObjectURL(blob);
-  const a    = document.createElement('a');
-  a.href = url; a.download = filename + '.csv'; a.click();
-  URL.revokeObjectURL(url);
-}
-
-// ── Today render ───────────────────────────────────────
-function render() {
-  const body  = document.getElementById('rosterBody');
-  const empty = document.getElementById('emptyState');
-  const total   = roster.length;
-  const inCount = roster.filter(p => p.checkedIn).length;
-  document.getElementById('statTotal').textContent = total;
-  document.getElementById('statIn').textContent    = inCount;
-  document.getElementById('statOut').textContent   = total - inCount;
-
-  if (total === 0) { body.innerHTML = ''; empty.style.display = 'block'; return; }
-  empty.style.display = 'none';
-
-  body.innerHTML = roster.map(p => `
-    <tr class="${p.checkedIn ? 'checked-in' : ''}">
-      <td onclick="toggleCheck(${p.id})">${p.checkedIn ? '✅' : '⬜'}</td>
-      <td class="name-cell">${p.last ? p.last + ', ' + p.first : p.first}</td>
-      <td style="font-size:13px;color:var(--muted)">${p.age || '—'}</td>
-      <td class="time-cell ${p.timeIn ? 'stamped' : ''}">${p.timeIn || '—'}</td>
-      <td class="note-cell"><input type="text" placeholder="note…" value="${escHtml(p.note)}" onchange="updateNote(${p.id}, this.value)"></td>
-      <td><button onclick="removeParticipant(${p.id})" style="background:none;border:none;font-size:16px;cursor:pointer;color:#c0392b;padding:4px 8px;">✕</button></td>
-    </tr>`).join('');
+  const a = document.createElement('a');
+  a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
+  a.download = 'acra-attendance.csv'; a.click();
 }
 
 function escHtml(s) {
-  return (s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');
+  return (s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 }
 
 function toggleAddForm() {
   document.getElementById('addForm').classList.toggle('open');
   if (document.getElementById('addForm').classList.contains('open'))
-    document.getElementById('newFirst').focus();
+    setTimeout(() => document.getElementById('newFirst').focus(), 50);
 }
 
-function printSheet() { window.print(); }
-
 document.addEventListener('keydown', e => {
-  if (e.key === 'Enter' && document.getElementById('addForm').classList.contains('open'))
-    addParticipant();
+  if (e.key === 'Enter' && document.getElementById('addForm').classList.contains('open')) addParticipant();
 });
 
 load();
