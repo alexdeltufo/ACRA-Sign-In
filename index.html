@@ -231,6 +231,16 @@ function load() {
     const h = localStorage.getItem('acra_history'); if (h) history = JSON.parse(h);
     const d = localStorage.getItem('acra_date'); if (d) sessionDate = d;
   } catch(e) {}
+
+  // Migrate old format (checkedIn boolean → status number)
+  roster.forEach(p => {
+    if (p.status === undefined) {
+      if (p.checkedIn) { p.status = STATUS.IN; }
+      else { p.status = STATUS.ABSENT; p.timeIn = null; p.timeOut = null; }
+      delete p.checkedIn;
+    }
+  });
+
   renderDate(); render(); renderHistory();
 }
 
